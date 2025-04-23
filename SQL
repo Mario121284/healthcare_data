@@ -1,5 +1,5 @@
 /*
-Covid 19 Data Exploration 
+Health Care Data Exploration 
 
 Skills used: DATEDIFF, CASE WHEN, Windows Functions, Aggregate Functions, STDDEV, CORR
 
