@@ -1,0 +1,83 @@
+-- Showing all the data
+SELECT *
+FROM `health-project-457519.healthcare.healthcare_data`
+ORDER BY id;
+
+-- Looking at the different amount of stays per medication
+
+SELECT 
+  medication,
+  AVG(DATE_DIFF(discharge_date, date_of_admission, DAY)) AS avg_length_of_stay
+FROM `health-project-457519.healthcare.healthcare_data`
+GROUP BY medication;
+
+-- Grouping by age and counting the amount of people in Group
+SELECT
+  COUNT(age) AS count_of_people_in_age,
+  CASE WHEN age BETWEEN 0 AND 17 THEN 'Minor'
+  WHEN age BETWEEN 18 AND 35 THEN 'Young Adult'
+  WHEN age BETWEEN 36 AND 50 THEN 'Middle Age'
+  ELSE '50+' END AS age
+FROM `health-project-457519.healthcare.healthcare_data`
+GROUP BY age;
+
+-- What medication is typically given to minors
+SELECT
+  COUNT(medication) AS count_of_medication,
+  medication,
+  age_group
+FROM 
+  (SELECT
+  medication,
+    CASE WHEN age BETWEEN 0 AND 17 THEN 'Minor'
+      WHEN age BETWEEN 18 AND 35 THEN 'Young Adult'
+      WHEN age BETWEEN 36 AND 50 THEN 'Middle Age'
+      ELSE '50+' END AS age_group
+    FROM
+      `health-project-457519.healthcare.healthcare_data`)
+WHERE age_group LIKE 'Minor'
+GROUP BY age_group, medication
+ORDER BY count_of_medication DESC;
+
+-- Top 5 Average Billing amount per Insurance Provier per Medical Condition
+SELECT
+  RANK () OVER (ORDER BY (ROUND(AVG(billing_amount), 2)) DESC) AS rank,
+  ROUND(AVG(billing_amount), 2) AS average_billing_amount,
+  insurance_provider,
+  medical_condition
+  FROM `health-project-457519.healthcare.healthcare_data`
+  GROUP BY insurance_provider, medical_condition
+  ORDER BY average_billing_amount DESC
+  LIMIT 5;
+
+-- Correlation of Average Length of stay and Average Billing amount
+SELECT 
+  CORR(avg_billing_amount, avg_length_of_stay)
+FROM (
+  SELECT
+  insurance_provider,
+  AVG(billing_amount) AS avg_billing_amount, 
+  AVG(DATE_DIFF(discharge_date, date_of_admission, DAY)) AS avg_length_of_stay,
+FROM `health-project-457519.healthcare.healthcare_data`
+GROUP BY insurance_provider);
+
+-- How does the correlation between length of stay and billing amount vary across different insurance providers?
+SELECT DISTINCT
+  insurance_provider,
+  CORR(billing_amount, DATE_DIFF(date_of_admission, discharge_date, DAY)) 
+    OVER (PARTITION BY insurance_provider) AS correlation_within_provider
+FROM `health-project-457519.healthcare.healthcare_data`
+
+-- Standard deviation of Billing Amount per Insurance Provider and Medical Condition 
+
+SELECT
+  insurance_provider,
+  medical_condition,
+  STDDEV(billing_amount) AS stddev_of_billing_amount
+FROM
+  `health-project-457519.healthcare.healthcare_data`
+GROUP BY
+  insurance_provider, medical_condition
+ORDER BY stddev_of_billing_amount DESC
+
+
