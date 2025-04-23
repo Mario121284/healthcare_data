@@ -1,3 +1,10 @@
+/*
+Covid 19 Data Exploration 
+
+Skills used: DATEDIFF, CASE WHEN, Windows Functions, Aggregate Functions, STDDEV, CORR
+
+*/ 
+
 -- Showing all the data
 SELECT *
 FROM `health-project-457519.healthcare.healthcare_data`
@@ -57,7 +64,7 @@ FROM (
   SELECT
   insurance_provider,
   AVG(billing_amount) AS avg_billing_amount, 
-  AVG(DATE_DIFF(discharge_date, date_of_admission, DAY)) AS avg_length_of_stay,
+  AVG(DATE_DIFF(discharge_date, date_of_admission, DAY)) AS avg_length_of_stay
 FROM `health-project-457519.healthcare.healthcare_data`
 GROUP BY insurance_provider);
 
@@ -66,7 +73,7 @@ SELECT DISTINCT
   insurance_provider,
   CORR(billing_amount, DATE_DIFF(date_of_admission, discharge_date, DAY)) 
     OVER (PARTITION BY insurance_provider) AS correlation_within_provider
-FROM `health-project-457519.healthcare.healthcare_data`
+FROM `health-project-457519.healthcare.healthcare_data`;
 
 -- Standard deviation of Billing Amount per Insurance Provider and Medical Condition 
 
