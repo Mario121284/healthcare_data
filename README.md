@@ -1,4 +1,4 @@
-# 🏥 Healthcare Data Analytics Project
+# Healthcare Data Analytics Project
 
 This repository presents a healthcare data analysis project using synthetic patient records. It focuses on exploring demographic patterns and test result distributions to simulate real-world data insights. The project showcases Excel data cleaning and Tableau dashboard creation, with planned integration of SQL queries.
 
